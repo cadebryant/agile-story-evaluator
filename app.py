@@ -366,4 +366,8 @@ def create_gradio_interface():
 # For Hugging Face Spaces deployment
 if __name__ == "__main__":
     interface = create_gradio_interface()
-    interface.launch()
+    interface.launch(
+        server_name="0.0.0.0",
+        server_port=int(os.environ.get("PORT", 7860)),
+        share=False
+    )
