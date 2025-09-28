@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
-Hugging Face Spaces deployment version of Agile Story Evaluator
+Railway deployment version of Agile Story Evaluator
 """
 
 import gradio as gr
 import openai
 import os
 import re
+import time
 from typing import Dict, List, Tuple
+from collections import defaultdict
 
 class INVESTEvaluator:
     """
@@ -21,12 +23,43 @@ class INVESTEvaluator:
     """
     
     def __init__(self):
-        # For Hugging Face Spaces, API key comes from environment
+        # For Railway deployment, API key comes from environment variables
         api_key = os.getenv("OPENAI_API_KEY")
         if api_key:
             self.client = openai.OpenAI(api_key=api_key)
         else:
             self.client = None
+        
+        # Rate limiting
+        self.usage_tracker = defaultdict(list)
+        self.max_requests_per_minute = 10
+        self.max_requests_per_hour = 100
+    
+    def check_rate_limit(self, user_id: str = "anonymous") -> bool:
+        """Check if user has exceeded rate limits"""
+        current_time = time.time()
+        
+        # Clean old entries
+        self.usage_tracker[user_id] = [
+            timestamp for timestamp in self.usage_tracker[user_id]
+            if current_time - timestamp < 3600  # Keep last hour
+        ]
+        
+        # Check limits
+        recent_requests = [
+            timestamp for timestamp in self.usage_tracker[user_id]
+            if current_time - timestamp < 60  # Last minute
+        ]
+        
+        if len(recent_requests) >= self.max_requests_per_minute:
+            return False
+        
+        if len(self.usage_tracker[user_id]) >= self.max_requests_per_hour:
+            return False
+        
+        # Record this request
+        self.usage_tracker[user_id].append(current_time)
+        return True
         
     def analyze_story_structure(self, story: str) -> Dict[str, any]:
         """Analyze the basic structure of the user story"""
@@ -276,6 +309,10 @@ def create_gradio_interface():
         if not story_text.strip():
             return "Please enter a user story to evaluate.", "", ""
         
+        # Check rate limiting
+        if not evaluator.check_rate_limit():
+            return "⚠️ Rate limit exceeded. Please wait before making more requests.", "", ""
+        
         # Get INVEST evaluation
         criteria = evaluator.evaluate_invest_criteria(story_text)
         
@@ -318,6 +355,14 @@ def create_gradio_interface():
     with gr.Blocks(title="Agile Story Evaluator", theme=gr.themes.Soft()) as interface:
         gr.Markdown("# 🎯 Agile Story Evaluator")
         gr.Markdown("Evaluate your user stories against INVEST criteria and get AI-powered feedback for improvement.")
+        
+        # Add usage guidelines
+        gr.Markdown("""
+        ### 📋 Usage Guidelines
+        - **Rate Limit**: 10 requests per minute, 100 per hour
+        - **Purpose**: Professional Agile story evaluation only
+        - **Respectful Use**: Please use responsibly and don't abuse the service
+        """)
         
         with gr.Row():
             with gr.Column(scale=2):
@@ -363,7 +408,7 @@ def create_gradio_interface():
     
     return interface
 
-# For Hugging Face Spaces deployment
+# For Railway deployment
 if __name__ == "__main__":
     interface = create_gradio_interface()
     interface.launch(
