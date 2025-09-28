@@ -35,7 +35,7 @@ def check_api_key():
 
 def main():
     """Main startup function"""
-    print("🚀 Starting Agile Story Evaluator...")
+    print("Starting Agile Story Evaluator...")
     print("=" * 50)
     
     # Check requirements
@@ -46,9 +46,9 @@ def main():
     has_api_key = check_api_key()
     
     if has_api_key:
-        print("✅ All systems ready! Starting full application...")
+        print("All systems ready! Starting full application...")
     else:
-        print("ℹ️  Starting application with limited features...")
+        print("Starting application with limited features...")
     
     # Import and run the main application
     try:
@@ -58,10 +58,11 @@ def main():
             server_name="0.0.0.0",
             server_port=7860,
             share=False,
-            show_error=True
+            show_error=True,
+            inbrowser=True
         )
     except Exception as e:
-        print(f"❌ Error starting application: {e}")
+        print(f"Error starting application: {e}")
         print("\nTry running the demo instead:")
         print("python demo_evaluator.py")
 

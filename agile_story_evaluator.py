@@ -20,7 +20,11 @@ class INVESTEvaluator:
     """
     
     def __init__(self):
-        self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        api_key = os.getenv("OPENAI_API_KEY")
+        if api_key and api_key != "your_openai_api_key_here":
+            self.client = openai.OpenAI(api_key=api_key)
+        else:
+            self.client = None
         
     def analyze_story_structure(self, story: str) -> Dict[str, any]:
         """Analyze the basic structure of the user story"""
@@ -189,6 +193,9 @@ class INVESTEvaluator:
     
     def get_ai_analysis(self, story: str) -> str:
         """Get AI-powered analysis of the user story"""
+        if not self.client:
+            return "AI analysis requires a valid OpenAI API key. Please add your API key to the .env file."
+        
         try:
             prompt = f"""
             Analyze this user story for Agile development:
@@ -221,6 +228,9 @@ class INVESTEvaluator:
     
     def generate_improved_story(self, story: str) -> str:
         """Generate an improved version of the user story"""
+        if not self.client:
+            return "Story improvement requires a valid OpenAI API key. Please add your API key to the .env file."
+        
         try:
             prompt = f"""
             Improve this user story to better comply with INVEST criteria:
@@ -358,5 +368,6 @@ if __name__ == "__main__":
         server_name="0.0.0.0",
         server_port=7860,
         share=False,
-        show_error=True
+        show_error=True,
+        inbrowser=True
     )
