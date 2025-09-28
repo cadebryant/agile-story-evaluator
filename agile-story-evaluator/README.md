@@ -8,7 +8,7 @@ sdk_version: 4.44.0
 app_file: app.py
 pinned: false
 license: mit
-short_description: Evaluate user stories against INVEST criteria with AI-powered feedback
+short_description: Evaluate user stories against INVEST criteria with AI feedback
 ---
 
 # 🎯 Agile Story Evaluator
