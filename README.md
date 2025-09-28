@@ -1,53 +1,43 @@
-# Agile Story Evaluator
+---
+title: Agile Story Evaluator
+emoji: 🎯
+colorFrom: blue
+colorTo: purple
+sdk: gradio
+sdk_version: 4.44.0
+app_file: app.py
+pinned: false
+license: mit
+short_description: Evaluate user stories against INVEST criteria with AI-powered feedback
+---
 
-A Python/Gradio AI application that evaluates Agile user stories against the INVEST criteria and provides constructive feedback for improvement.
+# 🎯 Agile Story Evaluator
 
-## Features
+A powerful AI application that evaluates Agile user stories against the INVEST criteria and provides constructive feedback for improvement.
+
+## ✨ Features
 
 - **INVEST Criteria Evaluation**: Analyzes stories for Independence, Negotiability, Value, Estimability, Size, and Testability
-- **AI-Powered Analysis**: Uses OpenAI GPT to provide detailed critique and suggestions
+- **AI-Powered Analysis**: Uses OpenAI GPT for detailed critique and suggestions
 - **Story Improvement**: Generates improved versions of user stories
-- **Interactive Web Interface**: Clean, user-friendly Gradio interface
+- **Interactive Interface**: Clean, user-friendly Gradio interface
 - **Real-time Feedback**: Instant evaluation as you type
 
-## Installation
+## 🚀 How to Use
 
-1. Clone or download this repository
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+1. **Enter your user story** in the text box
+2. **Click "Evaluate Story"** or let it auto-evaluate
+3. **Review the INVEST scores** and feedback
+4. **Get AI analysis** for detailed insights
+5. **See improved story suggestions**
 
-3. Set up your OpenAI API key:
-   - Copy `env_example.txt` to `.env`
-   - Add your OpenAI API key to the `.env` file
-   - Get your API key from: https://platform.openai.com/api-keys
+## 📋 Sample Stories to Try
 
-## Usage
+- "As a customer, I want to view my order history so that I can track my purchases"
+- "As a user, I want a login feature"
+- "As a product manager, I want to see analytics so that I can make data-driven decisions"
 
-### Quick Start
-```bash
-python run_app.py
-```
-
-### Alternative Methods
-```bash
-# Run main application directly
-python agile_story_evaluator.py
-
-# Run demo without API key
-python demo_evaluator.py
-```
-
-The application will start a web server (usually at http://localhost:7860). Open this URL in your browser to use the interface.
-
-### Demo Mode
-If you don't have an OpenAI API key, you can still see the core INVEST evaluation functionality:
-```bash
-python demo_evaluator.py
-```
-
-## INVEST Criteria
+## 🔧 INVEST Criteria
 
 The application evaluates stories against these criteria:
 
@@ -58,20 +48,23 @@ The application evaluates stories against these criteria:
 - **Small**: Appropriately sized (not too large or too small)
 - **Testable**: Can be verified through testing
 
-## Sample Stories
+## 🛠️ Setup for Development
 
-Try these examples to see the evaluator in action:
+```bash
+# Clone the repository
+git clone https://github.com/cadebryant/agile-story-evaluator.git
+cd agile-story-evaluator
 
-- "As a customer, I want to view my order history so that I can track my purchases"
-- "As a user, I want a login feature"
-- "As a product manager, I want to see analytics so that I can make data-driven decisions"
+# Install dependencies
+pip install -r requirements.txt
 
-## Requirements
+# Set up OpenAI API key (optional for AI features)
+# Create .env file with: OPENAI_API_KEY=your_key_here
 
-- Python 3.7+
-- OpenAI API key
-- Internet connection (for AI analysis)
+# Run locally
+python app.py
+```
 
-## License
+## 📄 License
 
 This project is open source and available under the MIT License.
