@@ -134,60 +134,212 @@ def create_gradio_interface():
         
         return feedback, ai_analysis, improved_story, generate_captcha()
     
-    # Create Gradio interface
-    with gr.Blocks(title="Agile Story Evaluator", theme=gr.themes.Soft()) as interface:
-        gr.Markdown("# 🎯 Agile Story Evaluator")
-        gr.Markdown("Evaluate your user stories against INVEST criteria and get AI-powered feedback for improvement.")
+    # Create Gradio interface with modern theme
+    with gr.Blocks(
+        title="Agile Story Evaluator", 
+        theme=gr.themes.Soft(
+            primary_hue="blue",
+            secondary_hue="gray",
+            neutral_hue="slate"
+        ),
+        css="""
+        .gradio-container {
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+        }
+        .main-header {
+            text-align: center;
+            padding: 2rem 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        }
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin: 1rem 0;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .captcha-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 2px solid #dee2e6;
+            margin: 1rem 0;
+        }
+        .evaluate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border: none !important;
+            border-radius: 10px !important;
+            padding: 12px 24px !important;
+            font-weight: 600 !important;
+            font-size: 16px !important;
+            transition: all 0.3s ease !important;
+        }
+        .evaluate-btn:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4) !important;
+        }
+        .results-section, .ai-section, .improved-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            border-left: 4px solid #667eea;
+            min-height: 200px;
+        }
+        .gradio-textbox {
+            border-radius: 8px !important;
+            border: 2px solid #e9ecef !important;
+            transition: border-color 0.3s ease !important;
+        }
+        .gradio-textbox:focus {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+        }
+        """
+    ) as interface:
         
-        # Add usage guidelines
-        gr.Markdown("""
-        ### 📋 Usage Guidelines
-        - **Rate Limit**: 10 requests per minute, 100 per hour
-        - **Purpose**: Professional Agile story evaluation only
-        - **Respectful Use**: Please use responsibly and don't abuse the service
+        # Modern header
+        gr.HTML("""
+        <div class="main-header">
+            <h1 style="margin: 0; font-size: 2.5rem; font-weight: 700;">🎯 Agile Story Evaluator</h1>
+            <p style="margin: 0.5rem 0 0 0; font-size: 1.2rem; opacity: 0.9;">
+                Professional INVEST criteria analysis with AI-powered insights
+            </p>
+        </div>
+        """)
+        
+        # Feature highlights
+        gr.HTML("""
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div class="feature-card">
+                <h3 style="color: #667eea; margin-top: 0;">📊 INVEST Analysis</h3>
+                <p>Comprehensive evaluation against all 6 INVEST criteria with detailed scoring</p>
+            </div>
+            <div class="feature-card">
+                <h3 style="color: #667eea; margin-top: 0;">🤖 AI Insights</h3>
+                <p>Advanced AI analysis powered by OpenAI GPT for professional feedback</p>
+            </div>
+            <div class="feature-card">
+                <h3 style="color: #667eea; margin-top: 0;">✨ Story Improvement</h3>
+                <p>Get enhanced versions of your stories with better scope and clarity</p>
+            </div>
+        </div>
         """)
         
         with gr.Row():
             with gr.Column(scale=2):
+                # Input section with modern styling
+                gr.HTML("""
+                <div class="feature-card">
+                    <h3 style="color: #667eea; margin-top: 0; margin-bottom: 1rem;">📝 Story Input</h3>
+                """)
+                
                 story_input = gr.Textbox(
                     label="Enter your user story",
                     placeholder="As a [persona], I want [action] so that [value]",
                     lines=4,
-                    max_lines=8
+                    max_lines=8,
+                    info="Use the standard user story format for best results"
                 )
                 
-                # CAPTCHA section
+                # Enhanced CAPTCHA section
+                gr.HTML("""
+                <div class="captcha-section">
+                    <h4 style="margin-top: 0; color: #495057;">🔒 Security Verification</h4>
+                """)
+                
                 with gr.Row():
                     captcha_question = gr.Textbox(
-                        label="Security Check",
+                        label="Math Problem",
                         value=generate_captcha(),
                         interactive=False,
-                        scale=2
+                        scale=2,
+                        info="Solve this math problem to verify you're human"
                     )
                     captcha_answer = gr.Textbox(
                         label="Your Answer",
                         placeholder="Enter the answer",
-                        scale=1
+                        scale=1,
+                        info="Type the numerical answer"
                     )
                 
-                evaluate_btn = gr.Button("Evaluate Story", variant="primary", size="lg")
+                gr.HTML("</div>")  # Close captcha section
                 
-                gr.Markdown("### 📋 Sample Stories to Try:")
-                gr.Markdown("""
-                - As a customer, I want to view my order history so that I can track my purchases
-                - As a user, I want a login feature
-                - As a product manager, I want to see analytics so that I can make data-driven decisions
+                evaluate_btn = gr.Button(
+                    "🚀 Evaluate Story", 
+                    variant="primary", 
+                    size="lg",
+                    elem_classes="evaluate-btn"
+                )
+                
+                gr.HTML("</div>")  # Close input card
+                
+                # Sample stories with better styling
+                gr.HTML("""
+                <div class="feature-card">
+                    <h3 style="color: #667eea; margin-top: 0;">💡 Sample Stories to Try</h3>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px; border-left: 4px solid #667eea;">
+                        <p style="margin: 0.5rem 0;"><strong>Good Example:</strong> "As a customer, I want to view my order history so that I can track my purchases"</p>
+                        <p style="margin: 0.5rem 0;"><strong>Needs Work:</strong> "As a user, I want a login feature"</p>
+                        <p style="margin: 0.5rem 0;"><strong>Complex:</strong> "As a product manager, I want to see analytics so that I can make data-driven decisions"</p>
+                    </div>
+                </div>
                 """)
             
             with gr.Column(scale=3):
-                invest_feedback = gr.Markdown(label="INVEST Evaluation")
+                # Results section with modern styling
+                gr.HTML("""
+                <div class="feature-card">
+                    <h3 style="color: #667eea; margin-top: 0; margin-bottom: 1rem;">📊 INVEST Evaluation Results</h3>
+                """)
+                
+                invest_feedback = gr.Markdown(
+                    label="",
+                    value="**Ready to evaluate your story!** Enter a user story above and click 'Evaluate Story' to see detailed INVEST criteria analysis.",
+                    elem_classes="results-section"
+                )
+                
+                gr.HTML("</div>")  # Close results card
         
         with gr.Row():
             with gr.Column():
-                ai_analysis = gr.Markdown(label="🤖 AI Analysis")
+                gr.HTML("""
+                <div class="feature-card">
+                    <h3 style="color: #667eea; margin-top: 0; margin-bottom: 1rem;">🤖 AI Analysis</h3>
+                """)
+                
+                ai_analysis = gr.Markdown(
+                    label="",
+                    value="*AI analysis will appear here after evaluation...*",
+                    elem_classes="ai-section"
+                )
+                
+                gr.HTML("</div>")
             
             with gr.Column():
-                improved_story = gr.Markdown(label="✨ Improved Story")
+                gr.HTML("""
+                <div class="feature-card">
+                    <h3 style="color: #667eea; margin-top: 0; margin-bottom: 1rem;">✨ Improved Story</h3>
+                """)
+                
+                improved_story = gr.Markdown(
+                    label="",
+                    value="*Enhanced story suggestions will appear here after evaluation...*",
+                    elem_classes="improved-section"
+                )
+                
+                gr.HTML("</div>")
         
         # Event handlers
         evaluate_btn.click(
@@ -202,6 +354,26 @@ def create_gradio_interface():
         #     inputs=[story_input, captcha_answer],
         #     outputs=[invest_feedback, ai_analysis, improved_story, captcha_question]
         # )
+        
+        # Modern footer with guidelines
+        gr.HTML("""
+        <div style="margin-top: 3rem; padding: 2rem; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 10px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: center;">
+                <div>
+                    <h4 style="color: #667eea; margin-bottom: 0.5rem;">⚡ Rate Limits</h4>
+                    <p style="margin: 0; color: #6c757d;">10 requests/minute<br>100 requests/hour</p>
+                </div>
+                <div>
+                    <h4 style="color: #667eea; margin-bottom: 0.5rem;">🎯 Purpose</h4>
+                    <p style="margin: 0; color: #6c757d;">Professional Agile<br>story evaluation</p>
+                </div>
+                <div>
+                    <h4 style="color: #667eea; margin-bottom: 0.5rem;">🤝 Respectful Use</h4>
+                    <p style="margin: 0; color: #6c757d;">Please use responsibly<br>and don't abuse</p>
+                </div>
+            </div>
+        </div>
+        """)
     
     return interface
 
