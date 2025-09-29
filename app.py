@@ -5,6 +5,7 @@ Railway deployment version of Agile Story Evaluator
 
 import os
 import time
+import random
 import gradio as gr
 from collections import defaultdict
 from agile_story_evaluator import INVESTEvaluator as BaseINVESTEvaluator, create_gradio_interface as base_create_gradio_interface
@@ -47,16 +48,53 @@ class INVESTEvaluator(BaseINVESTEvaluator):
         return True
 
 def create_gradio_interface():
-    """Create the Gradio web interface with rate limiting"""
+    """Create the Gradio web interface with rate limiting and CAPTCHA"""
     evaluator = INVESTEvaluator()
     
-    def evaluate_story(story_text):
+    # CAPTCHA state
+    captcha_state = {"question": "", "answer": 0}
+    
+    def generate_captcha():
+        """Generate a simple math CAPTCHA"""
+        num1 = random.randint(1, 10)
+        num2 = random.randint(1, 10)
+        operation = random.choice(['+', '-', '*'])
+        
+        if operation == '+':
+            answer = num1 + num2
+            question = f"{num1} + {num2} = ?"
+        elif operation == '-':
+            # Ensure positive result
+            if num1 < num2:
+                num1, num2 = num2, num1
+            answer = num1 - num2
+            question = f"{num1} - {num2} = ?"
+        else:  # multiplication
+            answer = num1 * num2
+            question = f"{num1} × {num2} = ?"
+        
+        captcha_state["question"] = question
+        captcha_state["answer"] = answer
+        return question
+    
+    def verify_captcha(user_answer):
+        """Verify CAPTCHA answer"""
+        try:
+            return int(user_answer) == captcha_state["answer"]
+        except:
+            return False
+    
+    def evaluate_story(story_text, captcha_answer):
         if not story_text.strip():
-            return "Please enter a user story to evaluate.", "", ""
+            return "Please enter a user story to evaluate.", "", "", ""
+        
+        # Verify CAPTCHA first
+        if not verify_captcha(captcha_answer):
+            return "❌ CAPTCHA verification failed. Please solve the math problem correctly.", "", "", ""
         
         # Check rate limiting
         if not evaluator.check_rate_limit():
-            return "⚠️ Rate limit exceeded. Please wait before making more requests.", "", ""
+            return "⚠️ Rate limit exceeded. Please wait before making more requests.", "", "", ""
         
         # Use the base evaluation logic
         criteria = evaluator.evaluate_invest_criteria(story_text)
@@ -94,7 +132,7 @@ def create_gradio_interface():
         # Get improved story
         improved_story = evaluator.generate_improved_story(story_text)
         
-        return feedback, ai_analysis, improved_story
+        return feedback, ai_analysis, improved_story, generate_captcha()
     
     # Create Gradio interface
     with gr.Blocks(title="Agile Story Evaluator", theme=gr.themes.Soft()) as interface:
@@ -118,6 +156,20 @@ def create_gradio_interface():
                     max_lines=8
                 )
                 
+                # CAPTCHA section
+                with gr.Row():
+                    captcha_question = gr.Textbox(
+                        label="Security Check",
+                        value=generate_captcha(),
+                        interactive=False,
+                        scale=2
+                    )
+                    captcha_answer = gr.Textbox(
+                        label="Your Answer",
+                        placeholder="Enter the answer",
+                        scale=1
+                    )
+                
                 evaluate_btn = gr.Button("Evaluate Story", variant="primary", size="lg")
                 
                 gr.Markdown("### 📋 Sample Stories to Try:")
@@ -140,16 +192,16 @@ def create_gradio_interface():
         # Event handlers
         evaluate_btn.click(
             fn=evaluate_story,
-            inputs=[story_input],
-            outputs=[invest_feedback, ai_analysis, improved_story]
+            inputs=[story_input, captcha_answer],
+            outputs=[invest_feedback, ai_analysis, improved_story, captcha_question]
         )
         
-        # Auto-evaluate on text change (with debouncing)
-        story_input.change(
-            fn=evaluate_story,
-            inputs=[story_input],
-            outputs=[invest_feedback, ai_analysis, improved_story]
-        )
+        # Auto-evaluate on text change (with debouncing) - disabled to require CAPTCHA
+        # story_input.change(
+        #     fn=evaluate_story,
+        #     inputs=[story_input, captcha_answer],
+        #     outputs=[invest_feedback, ai_analysis, improved_story, captcha_question]
+        # )
     
     return interface
 
