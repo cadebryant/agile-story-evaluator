@@ -51,9 +51,6 @@ def create_gradio_interface():
     """Create the Gradio web interface with rate limiting and CAPTCHA"""
     evaluator = INVESTEvaluator()
     
-    # CAPTCHA state
-    captcha_state = {"question": "", "answer": 0}
-    
     def generate_captcha():
         """Generate a simple math CAPTCHA"""
         num1 = random.randint(1, 10)
@@ -73,28 +70,33 @@ def create_gradio_interface():
             answer = num1 * num2
             question = f"{num1} × {num2} = ?"
         
-        captcha_state["question"] = question
-        captcha_state["answer"] = answer
-        return question
+        return question, answer  # Return both question and answer
     
-    def verify_captcha(user_answer):
+    def verify_captcha(user_answer, correct_answer):
         """Verify CAPTCHA answer"""
         try:
-            return int(user_answer) == captcha_state["answer"]
-        except:
+            user_int = int(str(user_answer).strip())
+            return user_int == correct_answer
+        except (ValueError, TypeError):
             return False
     
-    def evaluate_story(story_text, captcha_answer):
+    def evaluate_story(story_text, captcha_answer, captcha_state):
         if not story_text.strip():
-            return "Please enter a user story to evaluate.", "", "", ""
+            new_question, new_answer = generate_captcha()
+            new_state = {"question": new_question, "answer": new_answer}
+            return "Please enter a user story to evaluate.", "", "", new_question, new_state
         
-        # Verify CAPTCHA first
-        if not verify_captcha(captcha_answer):
-            return "❌ CAPTCHA verification failed. Please solve the math problem correctly.", "", "", ""
+        # Verify CAPTCHA first - use the correct answer from state
+        if not verify_captcha(captcha_answer, captcha_state["answer"]):
+            new_question, new_answer = generate_captcha()
+            new_state = {"question": new_question, "answer": new_answer}
+            return "❌ CAPTCHA verification failed. Please solve the math problem correctly.", "", "", new_question, new_state
         
         # Check rate limiting
         if not evaluator.check_rate_limit():
-            return "⚠️ Rate limit exceeded. Please wait before making more requests.", "", "", ""
+            new_question, new_answer = generate_captcha()
+            new_state = {"question": new_question, "answer": new_answer}
+            return "⚠️ Rate limit exceeded. Please wait before making more requests.", "", "", new_question, new_state
         
         # Use the base evaluation logic
         criteria = evaluator.evaluate_invest_criteria(story_text)
@@ -132,7 +134,12 @@ def create_gradio_interface():
         # Get improved story
         improved_story = evaluator.generate_improved_story(story_text)
         
-        return feedback, ai_analysis, improved_story, generate_captcha()
+        # Generate new CAPTCHA for next evaluation
+        new_question, new_answer = generate_captcha()
+        captcha_state["question"] = new_question
+        captcha_state["answer"] = new_answer
+        
+        return feedback, ai_analysis, improved_story, new_question, captcha_state
     
     # Create Gradio interface with modern theme
     with gr.Blocks(
@@ -237,6 +244,10 @@ def create_gradio_interface():
         </div>
         """)
         
+        # Initialize CAPTCHA state - this will be unique per user session
+        initial_question, initial_answer = generate_captcha()
+        captcha_state = gr.State({"question": initial_question, "answer": initial_answer})
+        
         with gr.Row():
             with gr.Column(scale=2):
                 # Input section with modern styling
@@ -262,7 +273,7 @@ def create_gradio_interface():
                 with gr.Row():
                     captcha_question = gr.Textbox(
                         label="Math Problem",
-                        value=generate_captcha(),
+                        value=initial_question,
                         interactive=False,
                         scale=2,
                         info="Solve this math problem to verify you're human"
@@ -344,8 +355,8 @@ def create_gradio_interface():
         # Event handlers
         evaluate_btn.click(
             fn=evaluate_story,
-            inputs=[story_input, captcha_answer],
-            outputs=[invest_feedback, ai_analysis, improved_story, captcha_question]
+            inputs=[story_input, captcha_answer, captcha_state],
+            outputs=[invest_feedback, ai_analysis, improved_story, captcha_question, captcha_state]
         )
         
         # Auto-evaluate on text change (with debouncing) - disabled to require CAPTCHA
