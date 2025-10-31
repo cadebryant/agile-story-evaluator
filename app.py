@@ -213,6 +213,36 @@ def create_gradio_interface():
             border-color: #667eea !important;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
         }
+        .github-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            text-decoration: none !important;
+            font-size: 0.9rem !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+            padding: 0.5rem 1rem !important;
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+            margin-top: 1rem !important;
+        }
+        .github-link:hover {
+            background: rgba(255, 255, 255, 0.25) !important;
+            transform: translateY(-2px) !important;
+        }
+        .github-link-footer {
+            color: #667eea !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+            transition: all 0.3s ease !important;
+        }
+        .github-link-footer:hover {
+            color: #764ba2 !important;
+            transform: translateY(-2px) !important;
+        }
         """
     ) as interface:
         
@@ -223,6 +253,12 @@ def create_gradio_interface():
             <p style="margin: 0.5rem 0 0 0; font-size: 1.2rem; opacity: 0.9;">
                 Professional INVEST criteria analysis with AI-powered insights
             </p>
+            <a href="https://github.com/cadebryant/agile-story-evaluator" target="_blank" class="github-link">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.25rem;">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                </svg>
+                View Source Code on GitHub
+            </a>
         </div>
         """)
         
@@ -382,6 +418,14 @@ def create_gradio_interface():
                     <h4 style="color: #667eea; margin-bottom: 0.5rem;">🤝 Respectful Use</h4>
                     <p style="margin: 0; color: #6c757d;">Please use responsibly<br>and don't abuse</p>
                 </div>
+            </div>
+            <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(102, 126, 234, 0.2);">
+                <a href="https://github.com/cadebryant/agile-story-evaluator" target="_blank" class="github-link-footer">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                    View Source Code on GitHub
+                </a>
             </div>
         </div>
         """)
