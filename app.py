@@ -8,7 +8,7 @@ import time
 import random
 import gradio as gr
 from collections import defaultdict
-from agile_story_evaluator import INVESTEvaluator as BaseINVESTEvaluator, create_gradio_interface as base_create_gradio_interface
+from agile_story_evaluator import INVESTEvaluator as BaseINVESTEvaluator
 
 class INVESTEvaluator(BaseINVESTEvaluator):
     """Railway deployment version with rate limiting"""
